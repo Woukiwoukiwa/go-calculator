@@ -14,24 +14,49 @@ func TestIsWhitespace(t *testing.T) {
 	assert.Assert(t, !isWhitespace('.'))
 }
 
-func TestIsNum(t *testing.T) {
+func TestIsNumber(t *testing.T) {
 	// Asserts
-	assert.Assert(t, isNum('1'))
-	assert.Assert(t, !isNum('a'))
-	assert.Assert(t, !isNum('.'))
+	assert.Assert(t, isNumber('1'))
+	assert.Assert(t, !isNumber('a'))
+	assert.Assert(t, !isNumber('.'))
 }
 
-func TestIsOp(t *testing.T) {
+func TestIsOperator(t *testing.T) {
 	// Asserts
-	assert.Assert(t, isOp("("))
-	assert.Assert(t, isOp(")"))
-	assert.Assert(t, isOp("-"))
-	assert.Assert(t, isOp("+"))
-	assert.Assert(t, isOp("/"))
-	assert.Assert(t, isOp("*"))
-	assert.Assert(t, isOp("^"))
-	assert.Assert(t, isOp("%"))
-	assert.Assert(t, !isOp("a"))
-	assert.Assert(t, !isOp("1"))
-	assert.Assert(t, !isOp("."))
+	assert.Assert(t, isOperator("("))
+	assert.Assert(t, isOperator(")"))
+	assert.Assert(t, isOperator("-"))
+	assert.Assert(t, isOperator("+"))
+	assert.Assert(t, isOperator("/"))
+	assert.Assert(t, isOperator("*"))
+	assert.Assert(t, isOperator("^"))
+	assert.Assert(t, isOperator("%"))
+	assert.Assert(t, !isOperator("a"))
+	assert.Assert(t, !isOperator("1"))
+	assert.Assert(t, !isOperator("."))
+}
+
+func TestReadWhile(t *testing.T) {
+	numRunes := []rune("123a456")
+	num, _ := readWhile(numRunes, isNumber)
+
+	spaceRunes := []rune("   123")
+	_, withoutSpace := readWhile(spaceRunes, isWhitespace)
+
+	// Asserts
+	assert.Assert(t, num == "123")
+	assert.Assert(t, string(withoutSpace) == "123")
+}
+
+func TestTokenize(t *testing.T) {
+	tokens := Tokenize("    12+14")
+
+	noToken := Tokenize("    ")
+
+	// Asserts
+	assert.Assert(t, tokens[0] == "12")
+	assert.Assert(t, tokens[1] == "+")
+	assert.Assert(t, tokens[2] == "14")
+
+	assert.Assert(t, len(noToken) == 0)
 }
