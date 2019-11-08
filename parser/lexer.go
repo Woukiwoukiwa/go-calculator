@@ -7,9 +7,22 @@ import (
 
 type isFunc func(rune) bool
 
-func Tokenize(s string) []string {
+type LexerType int
+
+const (
+	OPE    LexerType = iota //0
+	NUM                     //1
+	Erable                  //2
+)
+
+type Token struct {
+	Type  LexerType
+	Value string
+}
+
+func Tokenize(s string) []Token {
 	runes := []rune(s)
-	tokens := []string{}
+	tokens := []Token{}
 
 	for len(runes) > 0 {
 		// Skip white space
@@ -19,15 +32,23 @@ func Tokenize(s string) []string {
 			break
 		}
 
-		r, shifted := shift(runes)
+		r, shifted := shiftRune(runes)
 		runes = shifted
 
 		if isNumber(r) {
 			s, readed := readWhile(runes, isNumber)
 			runes = readed
-			tokens = append(tokens, string(r)+s)
+			token := Token{
+				Type:  OPE,
+				Value: string(r) + s,
+			}
+			tokens = append(tokens, token)
 		} else if isOperator(string(r)) {
-			tokens = append(tokens, string(r))
+			token := Token{
+				Type:  OPE,
+				Value: string(r),
+			}
+			tokens = append(tokens, token)
 		}
 	}
 	return tokens
@@ -36,7 +57,7 @@ func Tokenize(s string) []string {
 func readWhile(runes []rune, predicate isFunc) (string, []rune) {
 	var s = ""
 	for len(runes) > 0 && predicate(runes[0]) {
-		c, shifted := shift(runes)
+		c, shifted := shiftRune(runes)
 		runes = shifted
 		s += string(c)
 	}
@@ -55,7 +76,7 @@ func isOperator(r string) bool {
 	return validOp.MatchString(r)
 }
 
-func shift(runes []rune) (rune, []rune) {
+func shiftRune(runes []rune) (rune, []rune) {
 	var r rune
 	if len(runes) > 0 {
 		r = runes[0]
