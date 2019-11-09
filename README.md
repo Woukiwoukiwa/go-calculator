@@ -1,3 +1,7 @@
+<p align="center" style="margin-bottom: 20px; width: 100px; height: 100px; margin: auto">
+<img src="https://gophercises.com/img/gophercises_jumping.gif" width="250px"/>
+</p>
+
 # go-calculator
 
 Calculator based on shunting-yard algorithm whish is a method for parsing mathematical expressions specified in infix notation.
