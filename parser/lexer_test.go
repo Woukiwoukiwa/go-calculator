@@ -54,8 +54,11 @@ func TestTokenize(t *testing.T) {
 	noToken := Tokenize("    ")
 
 	// Asserts
+	assert.Assert(t, tokens[0].Type == NUM)
 	assert.Assert(t, tokens[0].Value == "12")
+	assert.Assert(t, tokens[1].Type == OPE)
 	assert.Assert(t, tokens[1].Value == "+")
+	assert.Assert(t, tokens[2].Type == NUM)
 	assert.Assert(t, tokens[2].Value == "14")
 
 	assert.Assert(t, len(noToken) == 0)

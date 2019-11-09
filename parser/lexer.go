@@ -39,7 +39,7 @@ func Tokenize(s string) []Token {
 			s, readed := readWhile(runes, isNumber)
 			runes = readed
 			token := Token{
-				Type:  OPE,
+				Type:  NUM,
 				Value: string(r) + s,
 			}
 			tokens = append(tokens, token)

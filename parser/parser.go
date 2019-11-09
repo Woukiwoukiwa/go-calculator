@@ -1,73 +1,96 @@
 package parser
 
 var PrecedenceOperators = map[string]int{
-	"(":   10,
-	"+":   20,
-	"-":   20,
-	"/":   30,
-	"*":   30,
-	"\\/": 30,
-	"^":   40,
+	"(": 10,
+	"+": 20,
+	"-": 20,
+	"/": 30,
+	"*": 30,
+	"^": 40,
 }
 
 // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
-func InfixExpression(tokens []Token) []Token {
-	stack := []Token{}
-	pending := []Token{}
+func PostFixExpression(infix []Token) []Token {
+	opeStack := []Token{}
+	tokens := []Token{}
 
-	for len(tokens) > 0 {
-		t, shifted := shiftToken(tokens)
-		tokens = shifted
+	for len(infix) > 0 {
+		t, shifted := ShiftToken(infix)
+		infix = shifted
 
 		tokenPrecedence := PrecedenceOperators[t.Value]
 
+		// Get last OPE from stack
 		stackPrecedence := 0
-		if len(stack) > 0 {
-			stackPrecedence = PrecedenceOperators[stack[len(stack)-1].Value]
+		if len(opeStack) > 0 {
+			stackPrecedence = PrecedenceOperators[opeStack[len(opeStack)-1].Value]
 		}
 
-		if t.Type == OPE {
+		if t.Type == NUM {
+			// Case of NUM
+			tokens = append(tokens, t)
+		} else if t.Type == OPE && len(opeStack) == 0 {
+			// Case First OPE in stack
+			opeStack = append(opeStack, t)
+			// var ope Token
+
+			// ope, poped := popToken(stack)
+			// stack = poped
+			// for ope.Value != "(" {
+			// 	tokens = append(tokens, ope)
+			// 	ope, poped = popToken(stack)
+			// 	tokens = poped
+			// }
+		} else if t.Type == OPE && tokenPrecedence > stackPrecedence {
+			// Case of token predecende is bigger of stack precedence
+			opeStack = append(opeStack, t)
+			// } else if t.Type == OPE && (!(len(stack) > 0) || t.Value == "(" || tokenPrecedence > stackPrecedence) {
+			// 	stack = append(stack, t)
+		} else if t.Type == OPE && t.Value == "(" {
+			// Case of open bracket
+			opeStack = append(opeStack, t)
+		} else if t.Type == OPE && t.Value == ")" {
+			// Case of closed bracket
 			var ope Token
 
-			ope, poped := popToken(stack)
-			stack = poped
+			ope, poped := popToken(opeStack)
+			opeStack = poped
 			for ope.Value != "(" {
-				pending = append(pending, ope)
-				ope, poped = popToken(stack)
-				pending = poped
-			}
-		} else if t.Type == NUM {
-			pending = append(pending, t)
-		} else if t.Type == OPE && (!(len(stack) > 0) || t.Value == "(" || tokenPrecedence > stackPrecedence) {
-			stack = append(stack, t)
-		} else {
-			for tokenPrecedence <= stackPrecedence {
-				token, poped := popToken(stack)
-				stack = poped
+				tokens = append(tokens, ope)
 
-				pending = append(pending, token)
+				ope, poped = popToken(opeStack)
+				opeStack = poped
+			}
+		} else {
+			// Case of stack predence is bigger of token precedence
+			for tokenPrecedence <= stackPrecedence {
+				token, poped := popToken(opeStack)
+				opeStack = poped
+
+				tokens = append(tokens, token)
 
 				stackPrecedence = 0
-				if len(stack) > 0 {
-					stackPrecedence = PrecedenceOperators[stack[len(stack)-1].Value]
+				if len(opeStack) > 0 {
+					stackPrecedence = PrecedenceOperators[opeStack[len(opeStack)-1].Value]
 				}
 			}
 
-			stack = append(stack, t)
+			opeStack = append(opeStack, t)
 		}
 	}
 
-	for len(stack) > 0 {
-		token, poped := popToken(stack)
-		stack = poped
+	// Add ope stack
+	for len(opeStack) > 0 {
+		token, poped := popToken(opeStack)
+		opeStack = poped
 
-		pending = append(pending, token)
+		tokens = append(tokens, token)
 	}
 
-	return pending
+	return tokens
 }
 
-func shiftToken(tokens []Token) (Token, []Token) {
+func ShiftToken(tokens []Token) (Token, []Token) {
 	var t Token
 	if len(tokens) > 0 {
 		t = tokens[0]

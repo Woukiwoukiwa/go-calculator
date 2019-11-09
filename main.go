@@ -1,12 +1,19 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
+
+	"github.com/Woukiwoukiwa/go-calculator/calc"
+	"github.com/Woukiwoukiwa/go-calculator/parser"
 )
 
 func main() {
-	log.Print("Hello")
 	argsWithoutProg := os.Args[1]
-	log.Print(argsWithoutProg)
+
+	infix := parser.Tokenize(argsWithoutProg)
+	tokens := parser.PostFixExpression(infix)
+	result := calc.Evaluate(tokens)
+
+	fmt.Println(result)
 }
