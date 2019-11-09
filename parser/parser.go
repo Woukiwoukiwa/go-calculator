@@ -1,5 +1,6 @@
 package parser
 
+// PrecedenceOperators define Precedence of operators
 var PrecedenceOperators = map[string]int{
 	"(": 10,
 	"+": 20,
@@ -9,7 +10,7 @@ var PrecedenceOperators = map[string]int{
 	"^": 40,
 }
 
-// https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+// PostFixExpression return postfix expression
 func PostFixExpression(infix []Token) []Token {
 	opeStack := []Token{}
 	tokens := []Token{}
@@ -32,20 +33,9 @@ func PostFixExpression(infix []Token) []Token {
 		} else if t.Type == OPE && len(opeStack) == 0 {
 			// Case First OPE in stack
 			opeStack = append(opeStack, t)
-			// var ope Token
-
-			// ope, poped := popToken(stack)
-			// stack = poped
-			// for ope.Value != "(" {
-			// 	tokens = append(tokens, ope)
-			// 	ope, poped = popToken(stack)
-			// 	tokens = poped
-			// }
 		} else if t.Type == OPE && tokenPrecedence > stackPrecedence {
 			// Case of token predecende is bigger of stack precedence
 			opeStack = append(opeStack, t)
-			// } else if t.Type == OPE && (!(len(stack) > 0) || t.Value == "(" || tokenPrecedence > stackPrecedence) {
-			// 	stack = append(stack, t)
 		} else if t.Type == OPE && t.Value == "(" {
 			// Case of open bracket
 			opeStack = append(opeStack, t)
@@ -55,7 +45,7 @@ func PostFixExpression(infix []Token) []Token {
 
 			ope, poped := popToken(opeStack)
 			opeStack = poped
-			for ope.Value != "(" {
+			for ope.Value != "(" && len(opeStack) != 0 {
 				tokens = append(tokens, ope)
 
 				ope, poped = popToken(opeStack)
@@ -90,6 +80,7 @@ func PostFixExpression(infix []Token) []Token {
 	return tokens
 }
 
+// ShiftToken shift token array
 func ShiftToken(tokens []Token) (Token, []Token) {
 	var t Token
 	if len(tokens) > 0 {

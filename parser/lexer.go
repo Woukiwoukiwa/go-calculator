@@ -1,25 +1,30 @@
 package parser
 
 import (
+	"log"
 	"regexp"
 	"unicode"
 )
 
 type isFunc func(rune) bool
 
+//LexerType lexer type
 type LexerType int
 
 const (
-	OPE    LexerType = iota //0
-	NUM                     //1
-	Erable                  //2
+	// OPE Operator
+	OPE LexerType = iota
+	// NUM Number
+	NUM
 )
 
+// Token define a token
 type Token struct {
 	Type  LexerType
 	Value string
 }
 
+// Tokenize performs a lexical analysis
 func Tokenize(s string) []Token {
 	runes := []rune(s)
 	tokens := []Token{}
@@ -49,6 +54,8 @@ func Tokenize(s string) []Token {
 				Value: string(r),
 			}
 			tokens = append(tokens, token)
+		} else {
+			log.Fatalf("Char %s not allowed", string(r))
 		}
 	}
 	return tokens

@@ -7,6 +7,7 @@ import (
 	"github.com/Woukiwoukiwa/go-calculator/parser"
 )
 
+// Evaluate postfix expression
 func Evaluate(tokens []parser.Token) int {
 	result := 0
 
